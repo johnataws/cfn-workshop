@@ -1,0 +1,10 @@
+Resources:
+  RDSCluster:
+    Type: 'AWS::RDS::DBCluster'
+    Properties:
+      MasterUsername: 'adminUser'
+      MasterUserPassword: 'Passw0rd!1'
+      DBClusterIdentifier: my-serverless-cluster
+      Engine: aurora-postgresql
+      EngineVersion: 10.7
+      EngineMode: serverless

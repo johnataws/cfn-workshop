@@ -1,0 +1,60 @@
+Description: An RDS DBCluster for the CloudFormation Workshop
+Mappings:
+  EnvironmentToScalingConfig:
+    test:
+      MinCapacity: 2
+      MaxCapacity: 4
+    dev:
+      MinCapacity: 4
+      MaxCapacity: 8
+    prod:
+      MinCapacity: 16
+      MaxCapacity: 32
+
+Parameters:
+  DBPwd: 
+    NoEcho: true
+    Description: The database admin account password
+    Type: String
+    MinLength: 1
+    MaxLength: 41
+    AllowedPattern: ^[a-zA-Z0-9]*$
+  ClusterName:
+    Description: The Name of the Cluster
+    Type: String
+  Environment:
+    Description: The deployment environment
+    Type: String
+    AllowedValues:
+      - test
+      - dev
+      - prod
+Outputs:
+BucketName:
+    Description: The name of our S3 Bucket
+    Value: !Ref S3Bucket
+
+Resources:
+  RDSCluster:
+    Type: 'AWS::RDS::DBCluster'
+    Properties:
+      MasterUsername: 'adminUser'
+      MasterUserPassword: !Ref DBPwd 
+      DBClusterIdentifier: !Join [ '-', [ !Ref ClusterName, !Ref Environment ] ]
+      Engine: aurora-postgresql
+      EngineVersion: 10.7
+      EngineMode: serverless
+      DeletionProtection: True
+      ScalingConfiguration:
+        AutoPause: true
+        MinCapacity: !FindInMap
+          - EnvironmentToScalingConfig
+          - !Ref Environment
+          - MinCapacity
+        MaxCapacity: !FindInMap
+          - EnvironmentToScalingConfig
+          - !Ref Environment
+          - MaxCapacity
+        SecondsUntilAutoPause: 1000
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'

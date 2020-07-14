@@ -1,0 +1,17 @@
+Description: An RDS DBCluster for the CloudFormation Workshop
+Resources:
+  RDSCluster:
+    Type: 'AWS::RDS::DBCluster'
+    Properties:
+      MasterUsername: 'adminUser'
+      MasterUserPassword: 'Passw0rd!1'
+      DBClusterIdentifier: my-serverless-cluster
+      Engine: aurora-postgresql
+      EngineVersion: 10.7
+      EngineMode: serverless
+      DeletionProtection: True
+      ScalingConfiguration:
+        AutoPause: true
+        MinCapacity: 4
+        MaxCapacity: 32
+        SecondsUntilAutoPause: 1000
